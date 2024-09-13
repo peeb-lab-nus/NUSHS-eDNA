@@ -50,3 +50,4 @@ rsconnect/
 data_raw/**
 data_processed/**
 figures/**
+**.DS_store
