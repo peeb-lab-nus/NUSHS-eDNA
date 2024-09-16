@@ -11,7 +11,7 @@ library(stringr)
 if(Sys.info()["user"] == "junyinglim"){
   main.dir <- "~/Dropbox/Projects/NUSHS-eDNA/"
 } else {
-  main.path <- "" # specify your main path here
+  main.dir <- "" # specify your main path here
 }
 
 data.dir <- file.path(main.dir, "data_raw")
@@ -25,7 +25,11 @@ if(!dir.exists(fig.dir)){dir.create(fig.dir)}
 sample_ids <- c("A1_1", "A1_2")
 
 # Define input parameter 
-multithread <- TRUE
+if(Sys.info()[["user"]] == "junyinglim"){
+  multithread <- TRUE  
+} else {
+  multithread <- FALSE
+}
 
 run_ids <- file.path(data.dir, sample_ids[1]) %>%
   list.files(pattern = "\\.fq\\.gz") %>%
@@ -34,7 +38,7 @@ run_ids <- file.path(data.dir, sample_ids[1]) %>%
   #gsub(., pattern = "_L1|_L2", replacement = "") %>%
   unique()
 
-run_id <- run_ids[1] # RERUN THE CODE FOR ALL RUN IDS
+run_id <- run_ids[2] # RERUN THE CODE FOR ALL RUN IDS
 
 # Get file names
 fname <- list.files(data.dir, recursive = TRUE, pattern = "\\.fq\\.gz", full.names = TRUE)
@@ -67,6 +71,7 @@ REV.orients <- allOrients(REV)
 FWD.orients
 REV.orients
 
+## TRIM AMBIGUOUS BASES ===============
 # Define subdirectory
 trim.dir <- file.path(output.dir, "1_Trimmed")
 
@@ -74,7 +79,6 @@ trim.dir <- file.path(output.dir, "1_Trimmed")
 fnFs.filtN <- file.path(trim.dir, paste(sample_ids, run_id, "1_trim.fq.gz", sep = "_")) 
 fnRs.filtN <- file.path(trim.dir, paste(sample_ids, run_id, "2_trim.fq.gz", sep = "_"))
 
-## TRIM AMBIGUOUS BASES ===============
 # Filter and trim
 filterAndTrim(fwd = run_id_for_fnames,
               filt = fnFs.filtN,
@@ -98,7 +102,6 @@ print(before_RemovingPrimers)
 # The reverse complement is low because the insert size is larger than 250 bp
 
 ## TRIM PRIMERS ====================
-
 # Define cutadapt path
 if(Sys.info()[["user"]] == "junyinglim"){
   cutadapt <- "/Users/junyinglim/my_virtual_env/bin/cutadapt"
@@ -217,7 +220,7 @@ mergers <- mergePairs(dadaF = dadaFs,
                       dadaR = dadaRs,
                       derepR = filtRs,
                       minOverlap = 50,
-                      verbose=TRUE)
+                      verbose = TRUE)
 
 # Construct sequence table
 seqtab <- makeSequenceTable(mergers)
@@ -232,6 +235,7 @@ seqtab.nochim <- removeBimeraDenovo(seqtab,
 
 # Number of unique sequences should be same or lower
 dim(seqtab.nochim)
+table(nchar(getSequences(seqtab.nochim)))
 
 # Proportion of unique reads that are not chimeras
 sum(seqtab.nochim)/sum(seqtab) 
