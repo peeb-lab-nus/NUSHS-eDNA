@@ -23,6 +23,7 @@ if(!dir.exists(fig.dir)){dir.create(fig.dir)}
 ## DEFINE SAMPLES =======================
 # Define sample ids (TO DO)
 sample_ids <- c("A1_1", "A1_2","A1_3","A2_1","A2_2","A2_3","CJ1_1","CJ1_2","CJ1_3","CJ2_1","CJ2_2","CJ2_3","CJ3_1","CJ3_2","CJ3_3","D1C","D2C","D3C","D4C","EXTC","HBS1_1","HBS1_2","HBS1_3","HBS2_1","HBS2_2","HBS2_3","HBS3_1","HBS3_2","HBS3_3","HC1_1","HC1_2","HC1_3","HC2_1","HC2_2","HC2_3","HC3_1","HC3_2","HC3_3","IX1_1","IX1_2","IX1_3","IX2_1","IX2_2","IX2_3","IX3_1","IX3_2","IX3_3","M1_1","M1_2","M1_3","M2_1","M2_2","M2_3","M3_1","M3_2","M3_3","PCR_NEG","PCR_NEG_REDO")
+#for run_ids[2], remove "D4C"
 
 # Define input parameter 
 multithread <- TRUE
@@ -251,7 +252,7 @@ dim(seqtab.nochim)
 sum(seqtab.nochim)/sum(seqtab) 
 table(nchar(getSequences(seqtab.nochim)))
 
-# Example of filtered sample_ids to match seqtab.nochim
+# Example of filtered sample_ids to match seqtab.nochim, change for each run
 filtered_sample_ids <- c("A1_1", "A1_2","A1_3","A2_1","A2_2","A2_3","CJ1_1","CJ1_2","CJ1_3","CJ2_1","CJ2_2","CJ2_3","CJ3_1","CJ3_2","CJ3_3","D1C","D3C","D4C","HBS1_1","HBS1_2","HBS1_3","HBS2_1","HBS2_2","HBS2_3","HBS3_1","HBS3_2","HBS3_3","HC1_1","HC1_2","HC1_3","HC2_1","HC2_2","HC2_3","HC3_1","HC3_2","HC3_3","IX1_1","IX1_2","IX1_3","IX2_1","IX2_2","IX2_3","IX3_1","IX3_2","IX3_3","M1_1","M1_2","M1_3","M2_1","M2_2","M2_3","M3_1","M3_2","M3_3","PCR_NEG","PCR_NEG_REDO")
 
 # Export results
@@ -276,9 +277,9 @@ getN <- function(x) sum(getUniques(x))
 track <- cbind(out, sapply(dadaFs, getN), sapply(dadaRs, getN), sapply(mergers, getN),
                rowSums(seqtab.nochim))
 
+#Match number of rows and columns to align after removal of files after filtering
 n_rows_track <- nrow(track)
 length_filtered_sample_ids <- length(filtered_sample_ids)
-
 if (n_rows_track > length_filtered_sample_ids) {
   track <- track[1:length_filtered_sample_ids, ]
 } else if (n_rows_track < length_filtered_sample_ids) {
