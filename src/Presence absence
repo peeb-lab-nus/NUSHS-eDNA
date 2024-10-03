@@ -1,0 +1,20 @@
+#generate presence/absence table
+seq_table_combined <- read.csv("~/downloads/NUSHS-eDNA-main/seq_table_combined.csv")
+
+library(plyr)
+
+test <- plyr::ddply(.data = seq_table_combined,
+                    .variables = c("sample_main", "master.seq.id"),
+                    .fun = summarise,
+                    present = ifelse(sum(value) > 0, 1, 0),
+                    .progress = "text")
+
+write.csv(test, "~/downloads/NUSHS-eDNA-main/seq_table_combined_presence.csv", row.names = FALSE)
+
+#filter out pcr control
+pcr_negative_samples <- c("PCR", "EXTC")
+pcr_negatives_df <- subset(test, sample_main %in% pcr_negative_samples)
+neg_seq_ids <- unique(pcr_negatives_df$master.seq.id[pcr_negatives_df$present == 1])
+cleaned_df <- test[!(test$master.seq.id %in% neg_seq_ids), ]
+write.csv(cleaned_df)
+write.csv(cleaned_df, "~/downloads/NUSHS-eDNA-main/seq_table_combined_cleaned.csv", row.names = FALSE)
