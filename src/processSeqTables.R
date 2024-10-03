@@ -83,3 +83,9 @@ write.csv(seq_table_combined,
           row.names = FALSE)
 
 
+test <- plyr::ddply(.data = seq_table_combined,
+      .variables = c("sample_main", "master.seq.id"),
+      .fun = summarise,
+      present = ifelse(sum(value) > 0, 1, 0),
+      .progress = "text")
+head(test)
